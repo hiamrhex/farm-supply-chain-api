@@ -1,0 +1,25 @@
+{
+  "name": "farm-supply-chain-api",
+  "version": "1.0.0",
+  "description": "Backend REST API for Farm Produce Supply Chain Management",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hiamrhex/farm-supply-chain-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/hiamrhex/farm-supply-chain-api/issues"
+  },
+  "homepage": "https://github.com/hiamrhex/farm-supply-chain-api#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
