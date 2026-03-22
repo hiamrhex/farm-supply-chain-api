@@ -4,8 +4,9 @@
   "description": "Backend REST API for Farm Produce Supply Chain Management",
   "main": "app.js",
   "scripts": {
+    "dev": "node --watch app.js",
     "start": "node app.js",
-    "dev": "node --watch app.js"
+    "seed:produce": "node src/seeds/produceSeed.js"
   },
   "repository": {
     "type": "git",
