@@ -1,5 +1,9 @@
-import mongoose from "mongoose";
+import dotenv from 'dotenv'
+dotenv.config()
 
+import mongoose from 'mongoose'
+
+// Connecting our app to mongodb database using mongoose
 const connectDB = async () => {
     try {
         const conn = await mongoose.connect(process.env.MONGO_URI);
