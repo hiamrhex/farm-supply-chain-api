@@ -1,12 +1,11 @@
 import produceService from "../services/produceService.js";
 
-// GET /produce - get all produce 
-// GET /produce?category=fruit - filter by category 
+// GET /produce
 const getAllProduce = async (req, res, next) => {
     try {
         const { category } = req.query;
         const produce = await produceService.getAllProduce(category);
-        
+
         res.status(200).json({
             success: true,
             count: produce.length,
@@ -17,16 +16,16 @@ const getAllProduce = async (req, res, next) => {
     }
 };
 
-// GET /produce/:id - get a single produce by ID
+// GET /produce/:id
 const getProduceById = async (req, res, next) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
         const produce = await produceService.getProduceById(id);
 
         if (!produce) {
-            res.status(404).json({
+            return res.status(404).json({
                 success: false,
-                message: `Produce with ID ${id} not found `
+                message: `Produce with ID ${id} not found`
             });
         }
 
@@ -39,19 +38,19 @@ const getProduceById = async (req, res, next) => {
     }
 };
 
-// POST /produce - create a new produce
+// POST /produce
 const createProduce = async (req, res, next) => {
     try {
         const { name, category, unitPrice, availableQuantity } = req.body;
 
         if (!name || !category || !unitPrice || !availableQuantity) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: "Please provide all required fields: name, category, unitPrice, availableQuantity"
             });
         }
 
-        const newProduce = await produceService.createProduce({name, category, unitPrice, availableQuantity});
+        const newProduce = await produceService.createProduce({ name, category, unitPrice, availableQuantity });
 
         res.status(201).json({
             success: true,
@@ -63,23 +62,23 @@ const createProduce = async (req, res, next) => {
     }
 };
 
-// PUT /produce/:id - update a produce by ID
+// PUT /produce/:id
 const updateProduce = async (req, res, next) => {
     try {
         const { id } = req.params;
         const updateProduceData = req.body;
 
         if (Object.keys(updateProduceData).length === 0) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: "Please provide at least one field to update"
             });
         }
 
-        const updateProduce = await produceService.updateProduce(id, updateProduceData);
+        const updatedProduce = await produceService.updateProduce(id, updateProduceData);
 
-        if (!updateProduce) {
-            res.status(404).json({
+        if (!updatedProduce) {
+            return res.status(404).json({
                 success: false,
                 message: `Produce with ID ${id} not found`
             });
@@ -88,32 +87,32 @@ const updateProduce = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "Produce updated successfully",
-            data: updateProduce
+            data: updatedProduce
         });
-    
     } catch (error) {
         next(error);
     }
-};     
+};
 
-// DELETE /produce/:id - delete a produce by ID
+// DELETE /produce/:id
 const deleteProduce = async (req, res, next) => {
     try {
-        const {id} = req.params;
+        const { id } = req.params;
         const deletedProduce = await produceService.deleteProduce(id);
 
         if (!deletedProduce) {
-            res.status(404).json({
+            return res.status(404).json({
                 success: false,
                 message: `Produce with ID ${id} not found`
             });
-
-            res.status(200).json({
-                success: true,
-                message: "Produce deleted successfully",
-                data: deletedProduce
-            });
         }
+
+        // Fixed: Moved this OUTSIDE the error block
+        res.status(200).json({
+            success: true,
+            message: "Produce deleted successfully",
+            data: deletedProduce
+        });
     } catch (error) {
         next(error);
     }
