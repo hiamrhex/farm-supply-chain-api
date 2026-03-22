@@ -1,29 +1,17 @@
 import mongoose from 'mongoose';
 
-const orderSchema = new mongoose.Schema(
+const retailerSchema = new mongoose.Schema(
   {
-    retailerId: {
-      type: mongoose.Schema.Types.ObjectId, 
-      required: true,
-      ref: 'Retailer' 
-    },
-    produceId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: 'Produce' 
-    },
-    quantity: {
-      type: Number,
+    name: {
+      type: String,
       required: true
     },
-    status: {
+    location: {
       type: String,
-      required: true,
-      default: 'pending',       
-      enum: ['pending', 'shipped', 'delivered'] 
+      required: true
     }
   },
   { timestamps: true }
 );
 
-export default mongoose.model('Order', orderSchema);
+export default mongoose.model('Retailer', retailerSchema);
