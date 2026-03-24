@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "node --watch app.js",
     "start": "node app.js",
-    "seed:produce": "node src/seeds/produceSeed.js"
+    "seed:produce": "node src/seeds/produceSeed.js",
+    "seed:batches": "node src/seeds/batchesSeed.js"
+
   },
   "repository": {
     "type": "git",

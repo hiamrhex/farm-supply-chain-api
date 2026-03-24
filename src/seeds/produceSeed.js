@@ -1,8 +1,4 @@
-import mongoose from "mongoose";
-import dotenv from "dotenv";
 import Produce from "../models/Produce.js";
-
-dotenv.config();
 
 const produceData = [
   {name: 'Mango', category: 'fruit', unitPrice: 2.5, availableQuantity: 500},
@@ -32,28 +28,18 @@ const produceData = [
   {name: 'Groundnut', category: 'nut', unitPrice: 3.0, availableQuantity: 400},
 ];
 
-const seedDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log('MongoDB connected for seeding...');
-        
-        //Clear existing produce data
-        await Produce.deleteMany({});
-        console.log('Existing produce data cleared.');
+export const seedProduce = async () => {
+  try {
+    console.log('Preparing to seed produce...');
+    
+    await Produce.deleteMany({});
+    console.log('Existing produce data cleared.');
 
-        // Insert new produce data
-        const inserted = await Produce.insertMany(produceData);
-        console.log(`${inserted.length} produce records inserted successfully!`);
+    const inserted = await Produce.insertMany(produceData);
+    console.log(`${inserted.length} produce records inserted successfully!`);
 
-        await mongoose.connection.close();
-        console.log('Database connection closed.');
-        process.exit(0);
-
-
-    } catch (error) {
-        console.error('Error seeding database:', error.message);
-        process.exit(1);
-    }
+  } catch (error) {
+    console.error('Error seeding produce database:', error.message);
+    throw error;
+  }
 };
-
-seedDB();
