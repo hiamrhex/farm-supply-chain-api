@@ -4,19 +4,23 @@ const farmerSchema = new mongoose.Schema(
   {
     name: {
       type: String, 
-      required: true
+      required: [true, 'Name is required'],
+      trim: true
     },
     location: {
       type: String,
-      required: true
+      required: [true, 'Location is required'],
+      trim: true
     },
     farmSize: {
       type: Number,
-      required: true
+      required: [true, 'Farm size is required'],
+      min: [0, 'Farm size cannot be negative'],
     },
     produceTypes: {
       type: [String],
-      required: true
+      required: [true, 'Produce types are required'],
+      default: []
     }
   },
   { timestamps: true }
