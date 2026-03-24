@@ -9,6 +9,10 @@ const retailerSchema = new mongoose.Schema(
     location: {
       type: String,
       required: true
+    },
+    contactInfo: {
+      type: String,
+      required: true
     }
   },
   { timestamps: true }

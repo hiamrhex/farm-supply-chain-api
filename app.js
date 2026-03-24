@@ -29,6 +29,10 @@ app.use('/retailers', retailersRouter);
 
 app.use(errorHandler);
 
+app.get('/', (req, res) => {
+  res.send('Welcome to the Farm Supply Chain API!')
+})
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

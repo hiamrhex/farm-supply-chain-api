@@ -1,4 +1,4 @@
-import produceService from "../services/produceService.js";
+import produceService from "../services/produceServices.js";
 
 // GET /produce
 const getAllProduce = async (req, res, next) => {
