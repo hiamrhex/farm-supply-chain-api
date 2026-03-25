@@ -1,0 +1,907 @@
+{
+  "info": {
+    "_postman_id": "e150237b-3924-4bb3-96f6-66b742770b53",
+    "name": "Farm Supply Chain API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51073120",
+    "_collection_link": "https://go.postman.co/collection/51073120-e150237b-3924-4bb3-96f6-66b742770b53?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Farmers",
+      "item": [
+        {
+          "name": "Create Farmer",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Keep existing extraction (required)",
+                  "pm.environment.set(\"farmerId\", pm.response.json().data._id);",
+                  "",
+                  "// Basic response tests",
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test(\"Response body has success=true\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property(\"success\", true);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has data object with expected fields\", function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property(\"data\");",
+                  "    pm.expect(json.data).to.be.an(\"object\");",
+                  "",
+                  "    pm.expect(json.data).to.have.property(\"_id\");",
+                  "    pm.expect(json.data._id).to.be.a(\"string\").and.not.be.empty;",
+                  "",
+                  "    pm.expect(json.data).to.have.property(\"name\");",
+                  "    pm.expect(json.data.name).to.be.a(\"string\");",
+                  "",
+                  "    pm.expect(json.data).to.have.property(\"location\");",
+                  "    pm.expect(json.data.location).to.be.a(\"string\");",
+                  "",
+                  "    pm.expect(json.data).to.have.property(\"farmSize\");",
+                  "    pm.expect(json.data.farmSize).to.be.a(\"number\");",
+                  "",
+                  "    pm.expect(json.data).to.have.property(\"produceTypes\");",
+                  "    pm.expect(json.data.produceTypes).to.be.an(\"array\");",
+                  "});",
+                  "",
+                  "pm.test(\"createdAt/updatedAt are ISO timestamps (if present)\", function () {",
+                  "    const { data } = pm.response.json();",
+                  "    if (data.createdAt) pm.expect(new Date(data.createdAt).toString()).to.not.equal(\"Invalid Date\");",
+                  "    if (data.updatedAt) pm.expect(new Date(data.updatedAt).toString()).to.not.equal(\"Invalid Date\");",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Adebayo Farms\",\r\n  \"location\": \"Ogun State\",\r\n  \"phone\": \"08011223344\",\r\n  \"farmSize\": \"50\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/farmers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "farmers"
+              ]
+            },
+            "description": "Creates a new farmer record in the system.\n\nRequest Body:\n\n- name (string, required): Full name of the farmer\n    \n- location (string, required): City or region of the farm\n    \n- farmSize (number, required): Size of farm in acres\n    \n- produceTypes (array, required): List of produce types grown\n    \n\nExample Request:  \n{  \n\"name\": \"John Smith\",  \n\"location\": \"Lagos\",  \n\"farmSize\": 50,  \n\"produceTypes\": \\[\"corn\", \"yam\"\\]  \n}\n\nResponses:\n\n- 201: Farmer created successfully\n    \n- 400: Missing required fields\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Farmers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/farmers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "farmers"
+              ]
+            },
+            "description": "Retrieves a list of all registered farmers.\n\nNo request body required.\n\nResponses:\n\n- 200: Returns array of all farmers with count\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Farmer",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"location\": \"Updated Lagos\"\r\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/farmers/{{farmerId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "farmers",
+                "{{farmerId}}"
+              ]
+            },
+            "description": "Retrieves a specific farmer by their ID.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the farmer\n    \n\nResponses:\n\n- 200: Returns farmer object\n    \n- 404: Farmer not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Farmer",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"location\": \"Updated Lagos\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/farmers/69c31f38544399f8ce8ea265",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "farmers",
+                "69c31f38544399f8ce8ea265"
+              ]
+            },
+            "description": "Updates an existing farmer's information.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the farmer\n    \n\nRequest Body (include only fields to update):\n\n- name (string): Updated name\n    \n- location (string): Updated location\n    \n- farmSize (number): Updated farm size\n    \n- produceTypes (array): Updated produce list\n    \n\nResponses:\n\n- 200: Farmer updated successfully\n    \n- 400: No update data provided\n    \n- 404: Farmer not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Farmer",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/farmers/{{farmerId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "farmers",
+                "{{farmerId}}"
+              ]
+            },
+            "description": "Permanently removes a farmer from the system.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the farmer\n    \n\nResponses:\n\n- 200: Farmer deleted successfully\n    \n- 404: Farmer not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Retailers",
+      "item": [
+        {
+          "name": "Create Retailer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "if (pm.response.code === 201) {\r",
+                  "    pm.environment.set(\"retailerId\", response.data._id);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Mile 12 Fresh Grocers\",\r\n  \"location\": \"Mile 12 Market, Lagos\",\r\n  \"contactInfo\": \"08099887766\",\r\n  \"contactPerson\": \"Mrs. Yusuf\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/retailers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "retailers"
+              ]
+            },
+            "description": "Creates a new retailer record in the system.\n\nRequest Body:\n\n- name (string, required): Name of the retail store\n    \n- location (string, required): Location of the store\n    \n\nExample Request:  \n{  \n\"name\": \"Lagos Retail Store\",  \n\"location\": \"Lagos Island\"  \n}\n\nResponses:\n\n- 201: Retailer created successfully\n    \n- 400: Missing required fields\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Retailers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/retailers",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "retailers"
+              ]
+            },
+            "description": "Retrieves a list of all registered retailers.\n\nNo request body required.\n\nResponses:\n\n- 200: Returns array of all retailers with count\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Retailer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/retailers/{{retailerId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "retailers",
+                "{{retailerId}}"
+              ]
+            },
+            "description": "Updates an existing retailer's information.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the retailer\n    \n\nRequest Body (include only fields to update):\n\n- name (string): Updated store name\n    \n- location (string): Updated location\n    \n\nResponses:\n\n- 200: Retailer updated successfully\n    \n- 400: No update data provided\n    \n- 404: Retailer not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Retailer",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"phone\": \"08199999999\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/retailers/{{retailerId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "retailers",
+                "{{retailerId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Retailer",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/retailers/{{retailerId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "retailers",
+                "{{retailerId}}"
+              ]
+            },
+            "description": "Permanently removes a retailer from the system.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the retailer\n    \n\nResponses:\n\n- 200: Retailer deleted successfully\n    \n- 404: Retailer not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Produce",
+      "item": [
+        {
+          "name": "Create Produce",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {\r",
+                  "    const response = pm.response.json();\r",
+                  "    pm.environment.set(\"produceId\", response.data._id);\r",
+                  "    console.log(\"Produce ID saved: \" + response.data._id);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Red Onions\",\r\n  \"category\": \"vegetable\",\r\n  \"unitPrice\": 800,\r\n  \"availableQuantity\": 150,\r\n  \"unit\": \"basket\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/produce",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "produce"
+              ]
+            },
+            "description": "Creates a new produce item in the system.\n\nRequest Body:\n\n- name (string, required): Name of the produce\n    \n- category (string, required): Category → fruit | vegetable | grain\n    \n- unitPrice (number, required): Price per unit in Naira\n    \n- availableQuantity (number, required): Available stock quantity\n    \n\nExample Request:  \n{  \n\"name\": \"Tomatoes\",  \n\"category\": \"vegetable\",  \n\"unitPrice\": 500,  \n\"availableQuantity\": 1000  \n}\n\nResponses:\n\n- 201: Produce created successfully\n    \n- 400: Missing or invalid fields\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Produce",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/produce",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "produce"
+              ]
+            },
+            "description": "Retrieves all produce items. Supports filtering by category.\n\nQuery Parameter (optional):\n\n- category: Filter by fruit | vegetable | grain\n    \n\nExample: GET /produce?category=fruit\n\nResponses:\n\n- 200: Returns array of produce with count\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Produce",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/produce/{{produceId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "produce",
+                "{{produceId}}"
+              ]
+            },
+            "description": "Retrieves a specific produce item by ID.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the produce\n    \n\nResponses:\n\n- 200: Returns produce object\n    \n- 404: Produce not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Produce",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"unitPrice\": 2400,\r\n  \"availableQuantity\": 190\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/produce/{{produceId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "produce",
+                "{{produceId}}"
+              ]
+            },
+            "description": "Updates an existing produce item.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the produce\n    \n\nRequest Body (include only fields to update):\n\n- name (string): Updated produce name\n    \n- category (string): Updated category\n    \n- unitPrice (number): Updated price\n    \n- availableQuantity (number): Updated quantity\n    \n\nResponses:\n\n- 200: Produce updated successfully\n    \n- 400: No update data provided\n    \n- 404: Produce not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Produce",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/produce/{{produceId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "produce",
+                "{{produceId}}"
+              ]
+            },
+            "description": "Permanently removes a produce item from the system.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the produce\n    \n\nResponses:\n\n- 200: Produce deleted successfully\n    \n- 404: Produce not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Batches",
+      "item": [
+        {
+          "name": "Create Batch",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {\r",
+                  "    // Make sure 'data._id' matches your API response structure\r",
+                  "    pm.environment.set(\"batchId\", response.data._id);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"farmerId\": \"{{farmerId}}\",\r\n  \"produceId\": \"{{produceId}}\",\r\n  \"quantity\": 1000,\r\n  \"harvestDate\": \"2026-03-25\",\r\n  \"status\": \"harvested\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/batches",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "batches"
+              ]
+            },
+            "description": "Creates a new supply batch linking a farmer to a produce item.\n\nRequest Body:\n\n- farmerId (string, required): MongoDB ID of the farmer\n    \n- produceId (string, required): MongoDB ID of the produce\n    \n- quantity (number, required): Quantity in the batch\n    \n- harvestDate (date, required): Date of harvest\n    \n- status (string, required): pending | shipped | delivered\n    \n\nExample Request:  \n{  \n\"farmerId\": \"69c365e505b...\",  \n\"produceId\": \"69c365f105b...\",  \n\"quantity\": 100,  \n\"harvestDate\": \"2026-03-25\",  \n\"status\": \"pending\"  \n}\n\nResponses:\n\n- 201: Batch created successfully\n    \n- 400: Missing required fields\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Batches",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/batches",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "batches"
+              ]
+            },
+            "description": "Retrieves all supply batches in the system.\n\nNo request body required.\n\nResponses:\n\n- 200: Returns array of all batches with count\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Batch",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/batches/{{batchId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "batches",
+                "{{batchId}}"
+              ],
+              "query": [
+                {
+                  "key": "",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieves a specific batch by ID.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the batch\n    \n\nResponses:\n\n- 200: Returns batch object\n    \n- 404: Batch not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Batch Status",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"status\": \"harvested\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/batches/{{batchId}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "batches",
+                "{{batchId}}",
+                "status"
+              ]
+            },
+            "description": "Updates the delivery status of a supply batch.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the batch\n    \n\nRequest Body:\n\n- status (string, required): pending | shipped | delivered\n    \n\nExample Request:  \n{  \n\"status\": \"shipped\"  \n}\n\nResponses:\n\n- 200: Batch status updated successfully\n    \n- 400: Invalid or missing status\n    \n- 404: Batch not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get batches by Farmer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/batches/farmer/{{farmerId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "batches",
+                "farmer",
+                "{{farmerId}}"
+              ]
+            },
+            "description": "Retrieves all supply batches created by a specific farmer.\n\nURL Parameter:\n\n- farmerId (required): MongoDB ID of the farmer\n    \n\nResponses:\n\n- 200: Returns array of farmer's batches with count\n    \n- 404: No batches found for this farmer\n    \n- 500: Internal server error"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Orders",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// 1. Parse the JSON response\r",
+                  "const json = pm.response.json();\r",
+                  "\r",
+                  "// 2. Check if the request was successful\r",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {\r",
+                  "    \r",
+                  "    // 3. Look directly for _id (no .data wrapper needed!)\r",
+                  "    if (json._id) {\r",
+                  "        pm.environment.set(\"orderId\", json._id);\r",
+                  "        console.log(\"Successfully saved orderId:\", json._id); \r",
+                  "    } else {\r",
+                  "        console.log(\"Could not find _id in the response.\");\r",
+                  "    }\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const required = [\"retailerId\", \"batchId\", \"produceId\"];\r",
+                  "const missing = required.filter(k => !pm.environment.get(k));\r",
+                  "\r",
+                  "if (missing.length) {\r",
+                  "  throw new Error(\r",
+                  "    `Missing required environment variable(s): ${missing.join(\", \")}. ` +\r",
+                  "    `Set them in the active environment before creating an order.`\r",
+                  "  );\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"retailerId\": \"{{retailerId}}\",\r\n  \"batchId\": \"{{batchId}}\",\r\n  \"produceId\": \"{{produceId}}\",\r\n  \"quantity\": 50,\r\n  \"deliveryAddress\": \"123 Market Street, Lagos\",\r\n  \"status\": \"pending\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/orders",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "description": "Creates a new order from a retailer for a produce item.\n\nRequest Body:\n\n- retailerId (string, required): MongoDB ID of the retailer\n    \n- produceId (string, required): MongoDB ID of the produce\n    \n- quantity (number, required): Quantity ordered\n    \n- status (string, required): pending | processing | completed | cancelled\n    \n\nExample Request:  \n{  \n\"retailerId\": \"69c365ea05b...\",  \n\"produceId\": \"69c365f105b...\",  \n\"quantity\": 50,  \n\"status\": \"pending\"  \n}\n\nResponses:\n\n- 201: Order created successfully\n    \n- 400: Missing required fields\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/orders",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            },
+            "description": "Retrieves all orders in the system.\n\nNo request body required.\n\nResponses:\n\n- 200: Returns array of all orders with count\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/orders/{{orderId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            },
+            "description": "Retrieves a specific order by ID.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the order\n    \n\nResponses:\n\n- 200: Returns order object\n    \n- 404: Order not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"status\": \"shipped\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/{{orderId}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "status"
+              ]
+            },
+            "description": "Updates the status of an existing order.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the order\n    \n\nRequest Body:\n\n- status (string, required): pending | processing | completed | cancelled\n    \n\nExample Request:  \n{  \n\"status\": \"processing\"  \n}\n\nResponses:\n\n- 200: Order status updated successfully\n    \n- 400: Invalid or missing status\n    \n- 404: Order not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Orders by Retailer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/orders/retailer/{{retailerId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "retailer",
+                "{{retailerId}}"
+              ]
+            },
+            "description": "Retrieves all orders placed by a specific retailer.\n\nURL Parameter:\n\n- retailerId (required): MongoDB ID of the retailer\n    \n\nResponses:\n\n- 200: Returns array of retailer's orders with count\n    \n- 404: No orders found for this retailer\n    \n- 500: Internal server error"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Distributors",
+      "item": [
+        {
+          "name": "Create Distributors",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {\r",
+                  "    // Saves the new ID as a variable so your 'Get Single' and 'Update' routes work instantly\r",
+                  "    pm.environment.set(\"distributorId\", response.data._id);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Global Freight Ltd\",\r\n  \"vehicleType\": \"Cargo Van\",\r\n  \"licensePlate\": \"ABJ-999-ZZ\",\r\n  \"phone\": \"08055555555\",\r\n  \"status\": \"active\",\r\n  \"region\": \"North Central\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/distributors",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "distributors"
+              ]
+            },
+            "description": "Creates a new distributor record in the system.\n\nRequest Body:\n\n- name (string, required): Name of the distributor\n    \n- region (string, required): Region of operation\n    \n\nExample Request:  \n{  \n\"name\": \"Lagos Distributors Ltd\",  \n\"region\": \"South West\"  \n}\n\nResponses:\n\n- 201: Distributor created successfully\n    \n- 400: Missing required fields\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Distributors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/distributors",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "distributors"
+              ]
+            },
+            "description": "Retrieves all distributors in the system.\n\nNo request body required.\n\nResponses:\n\n- 200: Returns array of all distributors with count\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Distributor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/distributors/{{distributorId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "distributors",
+                "{{distributorId}}"
+              ]
+            },
+            "description": "Retrieves a specific distributor by ID.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the distributor\n    \n\nResponses:\n\n- 200: Returns distributor object\n    \n- 404: Distributor not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Update distributor",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"vehicleType\": \"Heavy Duty Trailer\",\r\n  \"phone\": \"08199887766\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/distributors/{{distributorId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "distributors",
+                "{{distributorId}}"
+              ]
+            },
+            "description": "Updates an existing distributor's information.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the distributor\n    \n\nRequest Body (include only fields to update):\n\n- name (string): Updated distributor name\n    \n- region (string): Updated region\n    \n\nResponses:\n\n- 200: Distributor updated successfully\n    \n- 400: No update data provided\n    \n- 404: Distributor not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Distributor",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/distributors/{{distributorId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "distributors",
+                "{{distributorId}}"
+              ]
+            },
+            "description": "Permanently removes a distributor from the system.\n\nURL Parameter:\n\n- id (required): MongoDB ID of the distributor\n    \n\nResponses:\n\n- 200: Distributor deleted successfully\n    \n- 404: Distributor not found\n    \n- 500: Internal server error"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

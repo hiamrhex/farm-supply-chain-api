@@ -1,18 +1,12 @@
 import express from 'express';
-import {
-  createDistributor,
-  getAllDistributors,
-  getDistributorById,
-  updateDistributor,
-  deleteDistributor,
-} from '../controllers/distributorsControllers.js';
+import distributorsController from '../controllers/distributorsControllers.js';
 
 const router = express.Router();
 
-router.post('/', createDistributor);
-router.get('/', getAllDistributors);
-router.get('/:id', getDistributorById);
-router.put('/:id', updateDistributor);
-router.delete('/:id', deleteDistributor);
+router.post('/', distributorsController.createDistributor);
+router.get('/', distributorsController.getAllDistributors);
+router.get('/:id', distributorsController.getDistributorById);
+router.put('/:id', distributorsController.updateDistributor);
+router.delete('/:id', distributorsController.deleteDistributor);
 
 export default router;
