@@ -8,13 +8,14 @@ const getAllProduce = async (category) => {
         filter.category = category.toLowerCase();
     }
 
-    const produce = await Produce.find(filter);
+    // Populate farmer details but hide the password for security
+    const produce = await Produce.find(filter).populate("farmerId", "email role");
     return produce;
 };
 
 // GET a single produce by ID
 const getProduceById = async (id) => {
-    const produce = await Produce.findById(id);
+    const produce = await Produce.findById(id).populate("farmerId", "email role");
     return produce;
 };
 

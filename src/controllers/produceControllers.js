@@ -50,7 +50,14 @@ const createProduce = async (req, res, next) => {
             });
         }
 
-        const newProduce = await produceService.createProduce({ name, category, unitPrice, availableQuantity });
+        // Use the ID from the protect middleware to link this produce to the logged-in user
+        const newProduce = await produceService.createProduce({ 
+            name, 
+            category, 
+            unitPrice, 
+            availableQuantity,
+            farmerId: req.user.id 
+        });
 
         res.status(201).json({
             success: true,
@@ -107,7 +114,6 @@ const deleteProduce = async (req, res, next) => {
             });
         }
 
-        // Fixed: Moved this OUTSIDE the error block
         res.status(200).json({
             success: true,
             message: "Produce deleted successfully",

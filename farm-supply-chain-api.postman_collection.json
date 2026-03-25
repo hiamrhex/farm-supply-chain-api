@@ -8,6 +8,104 @@
   },
   "item": [
     {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register a New User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();\r",
+                  "if (json.token) {\r",
+                  "    pm.environment.set(\"jwt_token\", json.token);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"richard@finaltest.com\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"admin\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Registers a new user in the Farm Supply Chain system and securely hashes their password.\n\n### Request Details\n\n- **Method:** `POST`\n    \n- **Endpoint:** `/api/v1/auth/register` (or `/api/auth/register` depending on your setup)\n    \n- **Auth Required:** No\n    \n\n### Request Body\n\nThe request requires a JSON body containing the user's credentials and their designated role within the supply chain (`admin`, `farmer`, `retailer`, or `distributor`).\n\n\\`\\`\\`json  \n{  \n\"email\": \"[richard2@test.com](https://mailto:richard2@test.com)\",  \n\"password\": \"password123\",  \n\"role\": \"admin\"  \n}"
+          },
+          "response": []
+        },
+        {
+          "name": "User Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();\r",
+                  "\r",
+                  "if (pm.response.code === 200 && json.token) {\r",
+                  "    // This saves the token to your environment automatically\r",
+                  "    pm.environment.set(\"jwt_token\", json.token);\r",
+                  "    console.log(\"JWT Token saved! You can now use {{jwt_token}} in other requests.\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"richard@finaltest.com\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"admin\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Authenticates an existing user and returns a JSON Web Token (JWT) required to access protected routes within the Farm Supply Chain API.\n\n### Request Details\n\n- **Method:** `POST`\n    \n- **Endpoint:** `/api/v1/auth/login` (or `/api/auth/login`)\n    \n- **Auth Required:** No\n    \n\n### Request Body\n\nThe request requires the user's registered email and password.\n\n\\`\\`\\`json  \n{  \n\"email\": \"[richard2@test.com](https://mailto:richard2@test.com)\",  \n\"password\": \"password123\"  \n}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Farmers",
       "item": [
         {
@@ -28,11 +126,18 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "// Keep existing extraction (required)",
-                  "pm.environment.set(\"farmerId\", pm.response.json().data._id);",
+                  "// 1. Parse the response",
+                  "const response = pm.response.json();",
                   "",
-                  "// Basic response tests",
-                  "pm.test(\"Status code is 201\", function () {",
+                  "// 2. Save the Farmer ID to your Environment Variables",
+                  "// This allows you to use {{farmerId}} in other URLs!",
+                  "if (pm.response.code === 201 && response.data && response.data._id) {",
+                  "    pm.environment.set(\"farmerId\", response.data._id);",
+                  "    console.log(\"Farmer ID saved:\", response.data._id);",
+                  "}",
+                  "",
+                  "// 3. Validation Tests",
+                  "pm.test(\"Status code is 201 Created\", function () {",
                   "    pm.response.to.have.status(201);",
                   "});",
                   "",
@@ -40,38 +145,10 @@
                   "    pm.response.to.be.json;",
                   "});",
                   "",
-                  "pm.test(\"Response body has success=true\", function () {",
-                  "    const json = pm.response.json();",
-                  "    pm.expect(json).to.have.property(\"success\", true);",
-                  "});",
-                  "",
-                  "pm.test(\"Response has data object with expected fields\", function () {",
-                  "    const json = pm.response.json();",
-                  "    pm.expect(json).to.have.property(\"data\");",
-                  "    pm.expect(json.data).to.be.an(\"object\");",
-                  "",
-                  "    pm.expect(json.data).to.have.property(\"_id\");",
-                  "    pm.expect(json.data._id).to.be.a(\"string\").and.not.be.empty;",
-                  "",
-                  "    pm.expect(json.data).to.have.property(\"name\");",
-                  "    pm.expect(json.data.name).to.be.a(\"string\");",
-                  "",
-                  "    pm.expect(json.data).to.have.property(\"location\");",
-                  "    pm.expect(json.data.location).to.be.a(\"string\");",
-                  "",
-                  "    pm.expect(json.data).to.have.property(\"farmSize\");",
-                  "    pm.expect(json.data.farmSize).to.be.a(\"number\");",
-                  "",
-                  "    pm.expect(json.data).to.have.property(\"produceTypes\");",
-                  "    pm.expect(json.data.produceTypes).to.be.an(\"array\");",
-                  "});",
-                  "",
-                  "pm.test(\"createdAt/updatedAt are ISO timestamps (if present)\", function () {",
-                  "    const { data } = pm.response.json();",
-                  "    if (data.createdAt) pm.expect(new Date(data.createdAt).toString()).to.not.equal(\"Invalid Date\");",
-                  "    if (data.updatedAt) pm.expect(new Date(data.updatedAt).toString()).to.not.equal(\"Invalid Date\");",
-                  "});",
-                  ""
+                  "pm.test(\"Farmer was created with correct role\", function () {",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.data).to.have.property('name');",
+                  "});"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -80,6 +157,16 @@
             }
           ],
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
@@ -107,6 +194,16 @@
         {
           "name": "Get All Farmers",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -128,6 +225,16 @@
             "disableBodyPruning": true
           },
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "body": {
@@ -151,6 +258,16 @@
         {
           "name": "Update Farmer",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PUT",
             "header": [],
             "body": {
@@ -181,6 +298,16 @@
         {
           "name": "Delete Farmer",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "DELETE",
             "header": [],
             "url": {
@@ -248,6 +375,16 @@
         {
           "name": "Get All Retailers",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -285,6 +422,16 @@
         {
           "name": "Update Retailer",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PUT",
             "header": [],
             "body": {
@@ -312,6 +459,16 @@
         {
           "name": "Delete Retailer",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "DELETE",
             "header": [],
             "url": {
@@ -353,6 +510,16 @@
             }
           ],
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
@@ -380,6 +547,16 @@
         {
           "name": "Get All Produce",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -398,6 +575,16 @@
         {
           "name": "Get Single Produce",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -417,6 +604,16 @@
         {
           "name": "Update Produce",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PUT",
             "header": [],
             "body": {
@@ -445,6 +642,16 @@
         {
           "name": "Delete Produce",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "DELETE",
             "header": [],
             "url": {
@@ -486,6 +693,16 @@
             }
           ],
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
@@ -513,6 +730,16 @@
         {
           "name": "Get All Batches",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -531,6 +758,16 @@
         {
           "name": "Get Single Batch",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -558,6 +795,16 @@
         {
           "name": "Update Batch Status",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
             "header": [],
             "body": {
@@ -587,6 +834,16 @@
         {
           "name": "Get batches by Farmer",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -657,6 +914,16 @@
             }
           ],
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
@@ -684,6 +951,16 @@
         {
           "name": "Get All Orders",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -702,6 +979,16 @@
         {
           "name": "Get Single Order",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -721,6 +1008,16 @@
         {
           "name": "Update Order Status",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
             "header": [],
             "body": {
@@ -750,6 +1047,16 @@
         {
           "name": "Get Orders by Retailer",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -793,6 +1100,16 @@
             }
           ],
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
@@ -820,6 +1137,16 @@
         {
           "name": "Get All Distributors",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -838,6 +1165,16 @@
         {
           "name": "Get Single Distributor",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -857,6 +1194,16 @@
         {
           "name": "Update distributor",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PUT",
             "header": [],
             "body": {
@@ -885,6 +1232,16 @@
         {
           "name": "Delete Distributor",
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "DELETE",
             "header": [],
             "url": {

@@ -4,7 +4,7 @@ const batchSchema = new mongoose.Schema(
   {
     farmerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Farmer',
+      ref: 'User', // Changed to User to match your RBAC setup
       required: [true, 'Farmer ID is required'],
     },
     produceId: {

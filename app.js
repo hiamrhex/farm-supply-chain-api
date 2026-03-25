@@ -1,4 +1,5 @@
 import express from 'express';
+import dotenv from 'dotenv';
 import connectDB from './src/config/db.js';
 
 // routes
@@ -8,6 +9,8 @@ import batchesRouter from './src/routes/batches.js';
 import ordersRouter from './src/routes/orders.js';
 import distributorsRouter from './src/routes/distributors.js';
 import retailersRouter from './src/routes/retailers.js';
+import authRoutes from './src/routes/auth.js';
+
 
 // middlewares
 import { logger } from './src/middlewares/logger.js';
@@ -26,6 +29,8 @@ app.use('/batches', batchesRouter);
 app.use('/orders', ordersRouter);
 app.use('/distributors', distributorsRouter);
 app.use('/retailers', retailersRouter);
+
+app.use('/api/auth', authRoutes);
 
 app.use(errorHandler);
 

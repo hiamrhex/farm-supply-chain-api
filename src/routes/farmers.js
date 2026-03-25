@@ -6,23 +6,23 @@ import {
   updateFarmerController,
   deleteFarmerController
 } from '../controllers/farmersControllers.js'
+import { protect, authorize } from '../middlewares/authMiddleware.js';
 
 const router = express.Router()
 
-// GET all farmers
-router.get('/', getAllFarmersController)
+// GET all farmers (Accessible by any logged-in user)
+router.get('/', protect, getAllFarmersController)
 
+// GET single farmer (Accessible by any logged-in user)
+router.get('/:id', protect, getFarmerByIdController)
 
-// GET single farmer
-router.get('/:id', getFarmerByIdController)
+// CREATE farmer (Restricted to Admin only)
+router.post('/', protect, authorize('admin'), createFarmerController)
 
-// CREATE farmer
-router.post('/', createFarmerController)
+// UPDATE farmer (Restricted to Admin only)
+router.put('/:id', protect, authorize('admin'), updateFarmerController)
 
-// UPDATE farmer
-router.put('/:id', updateFarmerController)
-
-// DELETE farmer
-router.delete('/:id', deleteFarmerController)
+// DELETE farmer (Restricted to Admin only)
+router.delete('/:id', protect, authorize('admin'), deleteFarmerController)
 
 export default router

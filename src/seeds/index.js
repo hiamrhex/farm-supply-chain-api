@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import connectDB from "../config/db.js";
 
 import { seedProduce } from "./produceSeed.js";
 import { seedRetailers } from "./retailersSeed.js";
@@ -11,7 +12,7 @@ dotenv.config();
 
 const runSeeds = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await connectDB();
     console.log("MongoDB connected...");
 
     await seedProduce();
@@ -23,7 +24,7 @@ const runSeeds = async () => {
     console.log("All data seeded successfully");
     process.exit(0);
   } catch (error) {
-    console.error("Seeding error:", error.message);
+    console.error("Seeding failed:", error.message);
     process.exit(1);
   }
 };

@@ -1,28 +1,29 @@
 import { Router } from 'express';
 import batchesController from '../controllers/batchesControllers.js';
+import { protect, authorize } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 
-// GET /batches          — get all batches
-// POST /batches         — create new batch
+// GET /batches          â€” get all batches
+// POST /batches         â€” create new batch
 router
   .route('/')
-  .get(batchesController.getAllBatches)
-  .post(batchesController.createBatch);
+  .get(protect, batchesController.getAllBatches)
+  .post(protect, authorize('admin', 'farmer'), batchesController.createBatch);
 
-// GET /batches/farmer/:farmerId — get batches by farmer
+// GET /batches/farmer/:farmerId â€” get batches by farmer
 router
   .route('/farmer/:farmerId')
-  .get(batchesController.getBatchesByFarmerId);
+  .get(protect, batchesController.getBatchesByFarmerId);
 
-// GET /batches/:id      — get batch by ID
+// GET /batches/:id      â€” get batch by ID
 router
   .route('/:id')
-  .get(batchesController.getBatchById);
+  .get(protect, batchesController.getBatchById);
 
-// PATCH /batches/:id/status — update batch status
+// PATCH /batches/:id/status â€” update batch status
 router
   .route('/:id/status')
-  .patch(batchesController.updateBatchStatus);
+  .patch(protect, authorize('admin', 'farmer', 'distributor'), batchesController.updateBatchStatus);
 
 export default router;

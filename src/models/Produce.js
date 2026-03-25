@@ -31,6 +31,12 @@ const productSchema = new mongoose.Schema(
             min: [0, "Available quantity cannot be negative"],
             default: 0,
         },
+
+        farmerId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: [true, "Produce must belong to a farmer"]
+        },
     },
     {
         timestamps: true,

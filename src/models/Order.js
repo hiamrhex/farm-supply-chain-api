@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const orderSchema = new mongoose.Schema({
   retailerId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Retailer',
+    ref: 'User', // Changed from 'Retailer' to 'User' to match your auth system
     required: [true, 'Retailer ID is required']
   },
   produceId: {
@@ -19,7 +19,7 @@ const orderSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: {
-      values: ['pending', 'shipped', 'delivered'],
+      values: ['pending', 'shipped', 'delivered', 'cancelled'], // Added 'cancelled' for completeness
       message: '{VALUE} is not a valid order status'
     },
     default: 'pending'

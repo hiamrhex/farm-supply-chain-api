@@ -2,7 +2,11 @@ import * as orderService from '../services/ordersServices.js';
 
 export const createOrder = async (req, res, next) => {
   try {
-    const order = await orderService.createOrder(req.body);
+    // Automatically associate the order with the logged-in retailer
+    const order = await orderService.createOrder({
+      ...req.body,
+      retailerId: req.user.id 
+    });
     res.status(201).json(order);
   } catch (err) {
     next(err);
@@ -21,11 +25,11 @@ export const getAllOrders = async (req, res, next) => {
 export const getOrderById = async (req, res, next) => {
   try {
     const order = await orderService.getOrderById(req.params.id);
-    
+
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
-    
+
     res.json(order);
   } catch (err) {
     next(err);
@@ -38,11 +42,11 @@ export const updateOrderStatus = async (req, res, next) => {
       req.params.id,
       req.body.status
     );
-    
+
     if (!updated) {
       return res.status(404).json({ message: 'Order not found' });
     }
-    
+
     res.json(updated);
   } catch (err) {
     next(err);

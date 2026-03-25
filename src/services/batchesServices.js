@@ -3,7 +3,7 @@ import Batch from '../models/Batch.js';
 // GET all batches
 const getAllBatches = async () => {
   const batches = await Batch.find()
-    .populate('farmerId', 'name location')
+    .populate('farmerId', 'email role')
     .populate('produceId', 'name category unitPrice');
   return batches;
 };
@@ -11,7 +11,7 @@ const getAllBatches = async () => {
 // GET a single batch by ID
 const getBatchById = async (id) => {
   const batch = await Batch.findById(id)
-    .populate('farmerId', 'name location')
+    .populate('farmerId', 'email role')
     .populate('produceId', 'name category unitPrice');
   return batch;
 };
@@ -22,7 +22,7 @@ const createBatch = async (data) => {
   return newBatch;
 };
 
-// PATCH — update only the status of a batch
+// PATCH â€” update only the status of a batch
 const updateBatchStatus = async (id, status) => {
   const updatedBatch = await Batch.findByIdAndUpdate(
     id,
@@ -32,7 +32,7 @@ const updateBatchStatus = async (id, status) => {
       runValidators: true,
     }
   )
-    .populate('farmerId', 'name location')
+    .populate('farmerId', 'email role')
     .populate('produceId', 'name category unitPrice');
   return updatedBatch;
 };
@@ -40,7 +40,7 @@ const updateBatchStatus = async (id, status) => {
 // GET all batches by a specific farmer
 const getBatchesByFarmerId = async (farmerId) => {
   const batches = await Batch.find({ farmerId })
-    .populate('farmerId', 'name location')
+    .populate('farmerId', 'email role')
     .populate('produceId', 'name category unitPrice');
   return batches;
 };

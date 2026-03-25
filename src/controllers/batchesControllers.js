@@ -1,6 +1,6 @@
 import batchesService from '../services/batchesServices.js';
 
-// GET /batches — get all batches
+// GET /batches â€” get all batches
 const getAllBatches = async (req, res, next) => {
   try {
     const batches = await batchesService.getAllBatches();
@@ -15,7 +15,7 @@ const getAllBatches = async (req, res, next) => {
   }
 };
 
-// GET /batches/:id — get single batch by ID
+// GET /batches/:id â€” get single batch by ID
 const getBatchById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -37,22 +37,22 @@ const getBatchById = async (req, res, next) => {
   }
 };
 
-// POST /batches — create a new batch
+// POST /batches â€” create a new batch
 const createBatch = async (req, res, next) => {
   try {
-    const { farmerId, produceId, quantity, harvestDate, status } = req.body;
+    const { produceId, quantity, harvestDate, status } = req.body;
 
     // Basic validation
-    if (!farmerId || !produceId || !quantity || !harvestDate) {
+    if (!produceId || !quantity || !harvestDate) {
       return res.status(400).json({
         success: false,
         message:
-          'Please provide all required fields: farmerId, produceId, quantity, harvestDate',
+          'Please provide all required fields: produceId, quantity, harvestDate',
       });
     }
 
     const newBatch = await batchesService.createBatch({
-      farmerId,
+      farmerId: req.user.id,
       produceId,
       quantity,
       harvestDate,
@@ -69,7 +69,7 @@ const createBatch = async (req, res, next) => {
   }
 };
 
-// PATCH /batches/:id/status — update batch status only
+// PATCH /batches/:id/status â€” update batch status only
 const updateBatchStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -101,7 +101,7 @@ const updateBatchStatus = async (req, res, next) => {
   }
 };
 
-// GET /batches/farmer/:farmerId — get all batches by a farmer
+// GET /batches/farmer/:farmerId â€” get all batches by a farmer
 const getBatchesByFarmerId = async (req, res, next) => {
   try {
     const { farmerId } = req.params;
