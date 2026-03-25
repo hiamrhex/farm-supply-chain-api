@@ -53,17 +53,47 @@
 
     farm-supply-chain-api/
     ├── src/
-    │   ├── config/          # Database connection setup
-    │   ├── controllers/     # Route logic and response handling
-    │   ├── middlewares/     # Error handling, auth protection, and logging
-    │   ├── models/          # Mongoose Schemas (Data layer)
-    │   ├── routes/          # Express API endpoints
-    │   ├── seeds/           # Database seeding scripts (mainSeed.js, etc.)
-    │   └── services/        # Business logic and database queries
-    ├── .env
-    ├── app.js               # Application entry point
-    ├── package.json
-    └── README.md
+    │   ├── config/
+    │   │   └── db.js                       # MongoDB connection setup
+    │   ├── controllers/                    # Route logic and response handling
+    │   │   ├── authControllers.js
+    │   │   ├── produceControllers.js
+    │   │   └── ... (other controllers)
+    │   ├── middlewares/                    # Express middlewares
+    │   │   ├── errorHandler.js             # Global JSON error handler
+    │   │   ├── logger.js                   # Request logging
+    │   │   └── validation.js               # Data validation rules
+    │   ├── models/                         # Mongoose Schemas
+    │   │   ├── Batch.js
+    │   │   ├── Distributor.js
+    │   │   ├── Farmer.js
+    │   │   ├── Order.js
+    │   │   ├── Produce.js
+    │   │   ├── Retailer.js
+    │   │   └── User.js
+    │   ├── routes/                         # Express API endpoints
+    │   │   ├── auth.js
+    │   │   ├── batches.js
+    │   │   ├── distributors.js
+    │   │   ├── farmers.js
+    │   │   ├── orders.js
+    │   │   ├── produce.js
+    │   │   └── retailers.js
+    │   ├── seeds/                          # Database seeding scripts
+    │   │   ├── mainSeed.js                 # Master script for sequential seeding
+    │   │   ├── index.js
+    │   │   └── ... (individual domain seeders)
+    │   └── services/                       # Business logic and DB queries
+    │       ├── produceServices.js
+    │       └── ... (other services)
+    ├── .env                                # Environment variables
+    ├── .gitignore                          # Git ignore rules
+    ├── app.js                              # Application entry point
+    ├── farm-supply-chain-api.postman_collection.json  # Postman tests & docs
+    ├── package-lock.json
+    ├── package.json                        # Dependencies & NPM scripts
+    └── README.md                           # Project documentation
+
 
 ---
 
@@ -197,9 +227,8 @@ This project utilizes Postman for testing endpoints.
 
 ## Development Team
 
-- **Richard Ilori** ([@hiamrhex](https://github.com/hiamrhex)) - *Team Lead & Core Architecture / Authentication*
-- **Osborn** ([@10xosborn](https://github.com/10xosborn)) - *Developer*
-- **Samuel Idakwo** ([@mildsam](https://github.com/mildsam)) - *Developer (Orders & Distributors)*
+- **Richard Ilori** - *Team Lead & Core Architecture / Authentication*
+- **Samuel Idakwo** - *Developer (Orders & Distributors)*
 - **Junya** - *Developer (Farmers & Retailers)*
 - **Deborne** - *Developer (Produce & Database Seeds)*
 - **Jephmind** - *Developer (Batches)*
